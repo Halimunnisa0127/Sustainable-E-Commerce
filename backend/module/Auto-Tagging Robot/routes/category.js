@@ -1,34 +1,20 @@
-// const express = require("express")
-// const router = express.Router()
-// const { createCategory, getCategories } = require("../module2-b2b-proposal/categoryController")
+const express = require("express");
+const router = express.Router();
 
-// // POST /api/category - Generate category suggestions
-// router.post("/", createCategory)
-
-// // GET /api/category - Get all categories
-// router.get("/", getCategories)
-
-// module.exports = router
-
-const express = require("express")
-const router = express.Router()
-const {
-  generateCategories,
-  bulkGenerateCategories,
-  getCategories,
-  updateProductCategories
-} = require("../categoryController")
+// Import from the actual files
+const categoryController = require("../categoryController");
+const bulkCategoryController = require("../bulkCategoryController");
 
 // GET all categories
-router.get("/", getCategories)
+router.get("/", categoryController.getCategories);
 
 // POST generate categories for a product
-router.post("/generate", generateCategories)
+router.post("/generate", categoryController.generateCategories);
 
 // POST bulk generate categories
-router.post("/bulk-generate", bulkGenerateCategories)
+router.post("/bulk-generate", bulkCategoryController.bulkGenerateCategories);
 
 // PUT update product categories
-router.put("/product/:productId", updateProductCategories)
+router.put("/product/:productId", categoryController.updateProductCategories);
 
-module.exports = router
+module.exports = router;

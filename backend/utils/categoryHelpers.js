@@ -1,51 +1,35 @@
 // utils/categoryHelpers.js
 
 // Predefined categories for validation
-const VALID_CATEGORIES = [
-  'Personal Care',
-  'Lifestyle', 
-  'Stationery',
-  'Eco Gifts',
-  'Kitchen',
-  'Clothing'
-]
+const VALID_CATEGORIES = ['Personal Care', 'Lifestyle', 'Stationery', 'Eco Gifts', 'Kitchen', 'Clothing']
 
 const VALID_SUSTAINABILITY_FILTERS = [
-  'plastic-free',
-  'compostable',
-  'vegan',
-  'recycled',
-  'biodegradable',
-  'reusable',
-  'organic',
-  'zero-waste',
-  'handmade',
-  'natural'
+  'plastic-free', 'compostable', 'vegan', 'recycled', 'biodegradable', 'reusable', 'organic', 'zero-waste', 'handmade', 'natural'
 ]
 
 // Validate and clean AI response
 function validateCategoryResponse(aiResponse, productName) {
   const cleaned = {
-    primaryCategory: VALID_CATEGORIES.includes(aiResponse.primaryCategory) 
-      ? aiResponse.primaryCategory 
+    primaryCategory: VALID_CATEGORIES.includes(aiResponse.primaryCategory)
+      ? aiResponse.primaryCategory
       : 'Eco Gifts', // Default fallback
-      
+
     subCategory: aiResponse.subCategory || 'General',
-    
-    seoTags: Array.isArray(aiResponse.seoTags) 
+
+    seoTags: Array.isArray(aiResponse.seoTags)
       ? aiResponse.seoTags.slice(0, 10).map(tag => tag.toLowerCase().trim())
       : [productName.toLowerCase(), 'eco-friendly', 'sustainable'],
-    
+
     sustainabilityFilters: Array.isArray(aiResponse.sustainabilityFilters)
       ? aiResponse.sustainabilityFilters
-          .filter(filter => VALID_SUSTAINABILITY_FILTERS.includes(filter))
-          .slice(0, 5)
+        .filter(filter => VALID_SUSTAINABILITY_FILTERS.includes(filter))
+        .slice(0, 5)
       : ['eco-friendly'],
-    
+
     confidence: aiResponse.confidence || 0.8,
     reasoning: aiResponse.reasoning || 'Auto-categorized by AI'
   }
-  
+
   return cleaned
 }
 
@@ -67,7 +51,7 @@ function suggestRelatedCategories(productName, primaryCategory) {
     'Kitchen': ['Food Storage', 'Utensils', 'Cleaning', 'Beverage'],
     'Clothing': ['Tops', 'Bags', 'Accessories', 'Sustainable Fashion']
   }
-  
+
   return suggestions[primaryCategory] || ['General', 'Eco-friendly']
 }
 
