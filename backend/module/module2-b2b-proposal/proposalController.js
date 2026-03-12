@@ -7,7 +7,7 @@ const {
   getFallbackProducts,
   calculateCostsAndBudget,
   generateImpactSummary
-} = require("./proposalHelpers");
+} = require("../../utils/proposalHelpers");
 
 exports.createProposal = async (req, res) => {
   try {
