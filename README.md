@@ -1,4 +1,4 @@
-# 🌱 Rayeva AI System - Sustainable Commerce Platform
+# 🌱 Sustainable-Commerce Platform
 
 <div align="center">
 
