@@ -1,4 +1,4 @@
-# 🌱 Sustainable-Commerce Platform
+# 🌱 Sustainable-E Commerce Platform
 
 <div align="center">
 
