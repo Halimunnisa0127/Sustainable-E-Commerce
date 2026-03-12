@@ -1,190 +1,134 @@
-// aiService.js - Service functions for AI interactions
-const axios = require("axios")
+// aiService.js - Main AI service (combines all modules)
 
-async function generateProposal(prompt) {
+const { MODELS } = require("./aiConfig")
+const {
+  getCachedResponse,
+  cacheResponse,
+  createCacheKey,
+  callAI,
+  parseAIResponse,
+  createCategoryPrompt,
+  createProposalPrompt
+} = require("./aiHelpers")
+const {
+  getFallbackCategories,
+  getFallbackProposal
+} = require("./aiFallbacks")
+
+
+/* Generate B2B proposal using AI */
+async function generateProposal(prompt, options = {}) {
+  const startTime = Date.now()
+  const {
+    useCache = true,
+    model = MODELS.FAST,
+    eventType = "Corporate Event",
+    budget = 50000,
+    requirement = "Eco products"
+  } = options
+
   try {
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "meta-llama/llama-3.1-8b-instruct",
-        messages: [
-          { 
-            role: "user", 
-            content: prompt + "\n\nIMPORTANT: Return ONLY valid JSON. No explanations, no markdown, just the JSON object." 
-          }
-        ],
-        temperature: 0.1 // Lower temperature for more consistent JSON
-      },
-      {
-        headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:9000",
-          "X-Title": "Rayeva AI Project"
-        }
-      }
-    )
-
-    const text = response.data.choices[0].message.content
-    console.log("AI RAW RESPONSE:\n", text)
-
-    // Clean the response - remove any markdown or extra text
-    let cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    console.log(" Generating proposal...")
     
-    // Find JSON object
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/)
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0])
+    // Check cache
+    if (useCache) {
+      const cacheKey = createCacheKey("prop", prompt)
+      const cached = getCachedResponse(cacheKey)
+      if (cached) return cached
     }
 
-    throw new Error("No JSON found in response")
+    // Call AI
+    const messages = [
+      { role: "system", content: "You are a B2B proposal generator. Return ONLY JSON." },
+      { role: "user", content: prompt + "\nReturn ONLY JSON." }
+    ]
+    
+    const aiResponse = await callAI(messages, model)
+    console.log(" AI response received")
+    
+    // Parse response
+    const result = await parseAIResponse(aiResponse)
+    
+    // Cache result
+    if (useCache) {
+      const cacheKey = createCacheKey("prop", prompt)
+      cacheResponse(cacheKey, result)
+    }
 
-  } catch (err) {
-    console.error("AI ERROR:", err.message)
-    return null
+    console.log(` Proposal done in ${(Date.now() - startTime) / 1000}s`)
+    return result
+
+  } catch (error) {
+    console.error(" Proposal Error:", error.message)
+    console.log(" Using fallback proposal")
+    return getFallbackProposal(eventType, budget, requirement)
   }
 }
+/* Generate category tags for a product */
+async function generateCategoryTags(productName, description = '', options = {}) {
+  const startTime = Date.now()
+  const { useCache = true, model = MODELS.FAST } = options
+
+  try {
+    console.log(`Categorizing: ${productName}`)
+    
+    // Check cache
+    if (useCache) {
+      const cacheKey = createCacheKey("cat", `${productName}:${description}`)
+      const cached = getCachedResponse(cacheKey)
+      if (cached) return cached
+    }
+
+    // Create prompt and call AI
+    const prompt = createCategoryPrompt(productName, description)
+    const messages = [
+      { role: "system", content: "You are a product categorizer. Return only JSON." },
+      { role: "user", content: prompt }
+    ]
+    
+    const aiResponse = await callAI(messages, model)
+    
+    // Parse response
+    let result = await parseAIResponse(aiResponse)
+    
+    // Ensure required fields
+    result = {
+      primaryCategory: result.primaryCategory || 'Eco Gifts',
+      subCategory: result.subCategory || 'General',
+      seoTags: result.seoTags || [productName.toLowerCase(), 'eco-friendly'],
+      sustainabilityFilters: result.sustainabilityFilters || ['eco-friendly'],
+      confidence: result.confidence || 0.8,
+      reasoning: result.reasoning || 'Auto-categorized',
+      ...result
+    }
+
+    // Cache result
+    if (useCache) {
+      const cacheKey = createCacheKey("cat", `${productName}:${description}`)
+      cacheResponse(cacheKey, result)
+    }
+
+    console.log(`Categories done in ${(Date.now() - startTime) / 1000}s`)
+    return result
+
+  } catch (error) {
+    console.error(" Category Error:", error.message)
+    console.log(" Using fallback categories")
+    return getFallbackCategories(productName)
+  }
+}
+
+/* Generate category suggestions (legacy support) */
 async function generateCategorySuggestions(prompt) {
   try {
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "meta-llama/llama-3.1-8b-instruct",
-        messages: [
-          { 
-            role: "user", 
-            content: prompt + "\n\nIMPORTANT: Return ONLY valid JSON. No explanations, no markdown." 
-          }
-        ],
-        temperature: 0.3
-      },
-      {
-        headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:9000",
-          "X-Title": "Rayeva AI Project"
-        }
-      }
-    )
-
-    const text = response.data.choices[0].message.content
-    console.log("Category AI RAW RESPONSE:\n", text)
-
-    // Clean the response
-    let cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-    
-    // Find JSON object
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/)
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0])
-    }
-
-    // Fallback: return default structure
-    return {
-      primaryCategory: "Eco Gifts",
-      subCategory: "Sustainable Products",
-      seoTags: ["eco-friendly", "sustainable", "green", productName.toLowerCase()],
-      sustainabilityFilters: ["eco-friendly", "sustainable"]
-    }
-
+    const nameMatch = prompt.match(/Product Name: (.+)/i) || 
+                     ['', 'Unknown Product']
+    const productName = nameMatch[1].trim()
+    return await generateCategoryTags(productName)
   } catch (err) {
-    console.error("Category AI ERROR:", err.message)
-    return null
-  }
-}
-
-// Add to your existing aiService.js
-
-async function generateCategoryTags(productName, description = '') {
-  try {
-    const prompt = `
-You are an AI product categorization expert for an eco-friendly marketplace.
-
-Product Name: ${productName}
-${description ? `Description: ${description}` : 'No description provided'}
-
-TASK: Analyze this product and return a JSON with:
-
-1. PRIMARY CATEGORY - Choose from:
-   - Personal Care (toothbrushes, soaps, skincare)
-   - Lifestyle (bags, bottles, general accessories)
-   - Stationery (pens, notebooks, office supplies)
-   - Eco Gifts (gift items, seed bombs, special products)
-   - Kitchen (utensils, food storage, wraps)
-   - Clothing (apparel, accessories, fabrics)
-
-2. SUB-CATEGORY - Be specific (e.g., "Oral Care", "Writing Instruments", "Food Storage")
-
-3. SEO TAGS - Generate 5-10 relevant tags for search optimization
-   - Include material (bamboo, cotton, steel)
-   - Include use case (travel, office, kitchen)
-   - Include benefits (eco-friendly, sustainable)
-
-4. SUSTAINABILITY FILTERS - Choose ALL that apply:
-   - plastic-free
-   - compostable
-   - vegan
-   - recycled
-   - biodegradable
-   - reusable
-   - organic
-   - zero-waste
-   - handmade
-   - natural
-
-Return ONLY valid JSON in this exact format:
-{
-  "primaryCategory": "string",
-  "subCategory": "string",
-  "seoTags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
-  "sustainabilityFilters": ["filter1", "filter2", "filter3"],
-  "confidence": 0.95,
-  "reasoning": "Brief explanation of why these categories were chosen"
-}
-`
-
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "meta-llama/llama-3.1-8b-instruct",
-        messages: [
-          { 
-            role: "user", 
-            content: prompt 
-          }
-        ],
-        temperature: 0.3
-      },
-      {
-        headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:9000",
-          "X-Title": "Rayeva AI Project"
-        }
-      }
-    )
-
-    const text = response.data.choices[0].message.content
-    console.log("Category AI RAW RESPONSE:\n", text)
-
-    // Clean and parse JSON
-    const cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/)
-    
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0])
-    }
-
-    throw new Error("No JSON found")
-
-  } catch (err) {
-    console.error("Category Generation Error:", err.message)
-    return null
+    return getFallbackCategories('Product')
   }
 }
 
 
-module.exports = { generateProposal, generateCategorySuggestions, generateCategoryTags }
-
+module.exports = {generateProposal, generateCategoryTags, generateCategorySuggestions,MODELS}
