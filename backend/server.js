@@ -1,13 +1,14 @@
-process.on('uncaughtException', (err) => {
-  console.error('💥 UNCAUGHT EXCEPTION:', err);
-  console.error('Stack:', err.stack);
-  // Don't exit immediately - let Vercel log it
+// server.js - Add this before your routes
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Origin:', req.headers.origin);
+  console.log('CORS headers will be:', {
+    'Access-Control-Allow-Origin': req.headers.origin,
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization'
+  });
+  next();
 });
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('💥 UNHANDLED REJECTION:', reason);
-});
-
 
 
 
@@ -19,11 +20,14 @@ const cors = require("cors")
 const corsOptions = require("./CorsOptions/corsOptions")
 const connectDB = require("./config/db")
 
-// Import routes - make sure these files exist
+// Import routes
 const categoryRoutes = require("./module/Auto-Tagging Robot/routes/category")
-const proposalRoutes = require("./module/module2-b2b-proposal/routes/proposal") // Make sure this is proposal.js, not proposalRoutes.js
+const proposalRoutes = require("./module/module2-b2b-proposal/routes/proposal")
 
 const app = express()
+
+// Add this middleware to handle preflight requests for all routes
+app.options('*', cors(corsOptions)) // This handles preflight requests
 
 app.use(cors(corsOptions))
 app.use(express.json())
@@ -42,4 +46,3 @@ const PORT = process.env.PORT || 9000
 app.listen(PORT, () => {
   console.log(`Server listening at http://localhost:${PORT}`)
 })
-
