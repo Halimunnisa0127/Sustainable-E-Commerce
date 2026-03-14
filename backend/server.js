@@ -6,14 +6,11 @@ const cors = require("cors")
 const corsOptions = require("./CorsOptions/corsOptions")
 const connectDB = require("./config/db")
 
-// Import routes
+// Import routes - make sure these files exist
 const categoryRoutes = require("./module/Auto-Tagging Robot/routes/category")
-const proposalRoutes = require("./module/module2-b2b-proposal/routes/proposal")
+const proposalRoutes = require("./module/module2-b2b-proposal/routes/proposal") // Make sure this is proposal.js, not proposalRoutes.js
 
 const app = express()
-
-// Add this middleware to handle preflight requests for all routes
-app.options('*', cors(corsOptions)) // This handles preflight requests
 
 app.use(cors(corsOptions))
 app.use(express.json())
