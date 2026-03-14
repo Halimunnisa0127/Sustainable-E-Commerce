@@ -1,9 +1,7 @@
-//corsOptions.js
-
 require("dotenv").config()
 
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  "http://localhost:5173",
   "https://sustainable-e-commerce-8qd3.vercel.app",
   "https://sustainable-e-commerce.vercel.app"
 ]
@@ -22,7 +20,3 @@ const corsOptions = {
 }
 
 module.exports = corsOptions
-
-
-
-
