@@ -1,12 +1,11 @@
 //App.jsx
 
 import { BrowserRouter,Routes,Route } from "react-router-dom"
-
 import Navbar from "./components/Navbar"
-import Home from "./pages/Home"
-import CategoryGenerator from "./pages/CategoryGenerator"
-import ProposalGenerator from "./pages/ProposalGenerator"
-
+import Home from "./components/pages/Home"
+import CategoryGenerator from "./components/pages/CategoryGenerator"
+import ProposalGenerator from "./components/pages/ProposalGenerator"
+import "./App.css"
 function App(){
 
  return(

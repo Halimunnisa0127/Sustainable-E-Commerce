@@ -1,0 +1,90 @@
+@reference "tailwindcss";
+
+
+.proposal-container{
+  @apply max-w-4xl mx-auto px-6 py-10;
+}
+
+
+.proposal-title{
+  @apply text-3xl font-bold text-green-700 flex items-center gap-2 mb-8;
+}
+
+
+.proposal-card{
+  @apply bg-white p-8 rounded-xl shadow-md mb-10;
+}
+
+
+.input-group{
+  @apply flex flex-col mb-5;
+}
+
+.input-group label{
+  @apply font-semibold mb-2;
+}
+
+.input-group input,
+.input-group textarea{
+  @apply border border-gray-300 p-3 rounded-md;
+}
+
+
+.error-box{
+  @apply flex items-center gap-2 text-red-600 bg-red-100 p-3 rounded-md mb-4;
+}
+
+
+.generate-btn{
+  @apply bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-md flex items-center gap-2;
+}
+
+
+.result-card{
+  @apply bg-white p-8 rounded-xl shadow-md border border-green-400;
+}
+
+
+.result-title{
+  @apply text-xl font-bold text-green-700 mb-6;
+}
+
+
+.table-container{
+  @apply overflow-x-auto mb-6;
+}
+
+table{
+  @apply w-full text-left;
+}
+
+th{
+  @apply bg-gray-100 p-3 font-semibold;
+}
+
+td{
+  @apply p-3 border-b;
+}
+
+
+.eco-tags span{
+  @apply bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs mr-1;
+}
+
+
+.budget-box{
+  @apply bg-gray-100 p-4 rounded-md mb-6;
+}
+
+.budget-bar{
+  @apply w-full bg-gray-300 h-4 rounded-full mt-3 overflow-hidden;
+}
+
+.budget-bar div{
+  @apply bg-green-600 h-4;
+}
+
+
+.impact-box{
+  @apply bg-green-100 p-5 rounded-md border-l-4 border-green-600;
+}
