@@ -21,8 +21,21 @@ app.get("/", (req, res) => {
 app.use("/api/category", categoryRoutes)
 app.use("/api/proposal", proposalRoutes)
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
 
-module.exports = app
+const PORT = process.env.PORT || 9000;
+
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("Server failed to start:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
