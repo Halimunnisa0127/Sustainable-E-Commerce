@@ -21,4 +21,8 @@ app.get("/", (req, res) => {
 app.use("/api/category", categoryRoutes)
 app.use("/api/proposal", proposalRoutes)
 
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 module.exports = app
