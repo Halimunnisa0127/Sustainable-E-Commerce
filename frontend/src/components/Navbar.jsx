@@ -43,8 +43,8 @@ function Navbar() {
 
         {/* Logo */}
         <div className="flex items-center gap-2 text-white font-bold text-xl">
-          <Sprout className="animate-spin text-green-400" size={26} />
-          Rayeva AI System
+          <Sprout className="animate-spin [animation-duration:4s] text-green-400" size={26} />
+          EcoMind AI System
         </div>
 
         {/* Desktop Menu */}

@@ -34,7 +34,7 @@ function Home() {
 
         <h1 className="text-3xl md:text-5xl font-bold text-green-700 flex justify-center items-center gap-3">
           <Sprout size={40} className="text-green-500"/>
-          Rayeva AI Dashboard
+          EcoMind AI Dashboard
         </h1>
 
         <p className="text-gray-600 mt-4 text-lg">

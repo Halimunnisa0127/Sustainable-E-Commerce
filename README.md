@@ -34,10 +34,9 @@
 ---
 
 ## 📖 **Overview**
+EcoMind AI System is a powerful backend platform that leverages artificial intelligence to automate sustainable commerce operations.this project demonstrates the integration of AI with real business logic to create production-ready solutions.
 
-Rayeva AI System is a powerful backend platform that leverages artificial intelligence to automate sustainable commerce operations.this project demonstrates the integration of AI with real business logic to create production-ready solutions.
-
-### **Why Rayeva AI?**
+### **Why EcoMind  AI?**
 - 🤖 **AI-Powered** - Uses Llama 3.1 for intelligent decision making
 - 🌱 **Sustainability Focused** - Built for eco-friendly businesses
 - 🏗️ **Clean Architecture** - Separation of concerns, easy to maintain
@@ -109,15 +108,15 @@ Rayeva AI System is a powerful backend platform that leverages artificial intell
 ### Backend Setup
 ```bash
 # Clone repo
-git clone https://github.com/yourusername/rayeva-ai-system.git
-cd rayeva-ai-system/backend
+git clone https://github.com/yourusername/EcoMind-ai-system.git
+cd EcoMind-ai-system/backend
 
 # Install dependencies
 npm install express mongoose cors dotenv axios
 
 # Create .env file
 echo "PORT=9000
-MONGO_URI=mongodb://127.0.0.1:27017/rayeva-ai
+MONGO_URI=mongodb://127.0.0.1:27017/EcoMind-ai
 OPENROUTER_API_KEY=your-key-here" > .env
 
 # Start MongoDB

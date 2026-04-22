@@ -15,7 +15,7 @@ app.use(cors(corsOptions)) // This already handles OPTIONS preflight
 connectDB()
 
 app.get("/", (req, res) => {
-  res.send("Rayeva AI Backend Running")
+  res.send("EcoMind AI Backend Running")
 })
 
 app.use("/api/category", categoryRoutes)
